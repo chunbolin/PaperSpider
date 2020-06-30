@@ -9,7 +9,7 @@
 6. GB/T 7714/MLA/APA 引用格式
 
 爬取结束会生成CSV以供后续查看使用
-##使用
+## 使用
 注意需要科学上网才可使用！
 
 使用前请替换Spider.py中的headers中的cookie为合法的Google scholar的cookie，获取合法cookie的方法见下文。
