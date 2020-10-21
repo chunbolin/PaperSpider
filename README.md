@@ -10,7 +10,7 @@
 
 爬取结束会生成CSV以供后续查看使用
 ## 使用
-注意需要科学上网才可使用！
+注意需要科学上网才可使用！且目前发送请求的次数为10~15秒一次，请求过于频繁会被封cookie，建议按照目前设置的时间。
 
 使用前请替换Spider.py中的headers中的cookie为合法的Google scholar的cookie，获取合法cookie的方法见下文。
 ```python
