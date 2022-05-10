@@ -38,7 +38,7 @@ class PaperSpider:
         if self.need_other_cited:
             columns_info.append('other_cited_num')
         if self.need_cite_format:
-            columns_info.extend(['GB/T 7714', 'MLA', 'APA'])
+            columns_info.extend(['GB/T 7714', 'MLA', 'APA', 'BIBTEX'])
 
         for paper_title in self.paper_title_list:
             paper_info = self.crawl_single_paper(paper_title)
@@ -78,6 +78,7 @@ class PaperSpider:
         GBT = ''
         MLA = ''
         APA = ''
+        BIBTEX = ''
         possible_author_name = ''
 
         soup = BeautifulSoup(response_text, 'html.parser')
@@ -89,7 +90,7 @@ class PaperSpider:
 
             if self.need_cite_format:
                 paper_id = paper_div['data-cid']
-                GBT, MLA, APA = self.crawl_cite_format(paper_id)
+                GBT, MLA, APA, BIBTEX = self.crawl_cite_format(paper_id)
 
             # get it's title
             h3 = paper_div.find('h3', {'class': 'gs_rt'})
@@ -137,6 +138,7 @@ class PaperSpider:
             paper.append(GBT)
             paper.append(MLA)
             paper.append(APA)
+            paper.append(BIBTEX)
 
         return paper
 
@@ -179,7 +181,17 @@ class PaperSpider:
             format_name = tr.find('th', {'class': 'gs_cith'}).get_text()
             cite_format = tr.find('div', {'class': 'gs_citr'}).get_text().replace('<i>', '').replace('</i>', '')
             cite_formats[format_name] = cite_format
-        return cite_formats.get('GB/T 7714', ''), cite_formats.get('MLA', ''), cite_formats.get('APA', '')
+        ref_as = soup.find_all('a', {'class': 'gs_citi'})
+        bibtex_url = ''
+        bibtex_content = ''
+        for a_tag in ref_as:
+            if a_tag.get_text().find('BibTeX') != -1:
+                bibtex_url = a_tag['href']
+        # if we get the valid BibTeX url
+        if bibtex_url.startswith('http'):
+            bibtex_content = self.send_request(bibtex_url, {}, self.headers)
+
+        return cite_formats.get('GB/T 7714', ''), cite_formats.get('MLA', ''), cite_formats.get('APA', ''), bibtex_content
 
     # crawl detail information from dblp
     def crawl_detail(self, paper_title):
